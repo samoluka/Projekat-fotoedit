@@ -13,7 +13,7 @@
 #include "SelectionSet.h"
 #include "RectSelection.h"
 #include "Project.h"
-
+/*
 std::string source1 = "source_image/Velika.bmp";
 std::string source2 = "source_image/image4-32bit.bmp";
 std::string tmp = "tmp/tmp.bmp";
@@ -336,5 +336,17 @@ int main(int argc, char *argv[]) {
 		}
 		obrada_druga(p, s);
 	}
+	return 0;
+}*/
+#include "Pam.h"
+
+int main(int argc, char *argv[]) {
+	std::string path = "image2-32bit.pam";
+	Layer l;
+	Pam::load(path,l);
+	Pam::out("pam eksport.pam", l);
+	BMP::ExportBMP("medjustanje.bmp",l);
+	Pam::load("pam eksport.pam", l);
+	BMP::ExportBMP("proba pam krajnje.bmp", l);
 	return 0;
 }
