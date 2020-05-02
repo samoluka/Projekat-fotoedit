@@ -1,0 +1,9 @@
+Odaberi opciju:
+1. Prazan projekat
+2. Ucitaj projekat iz fajla
+0. Napusti program
+///////
+
+1. Dodaj sloj \n2. Dodaj selekciju \n3. Pogledaj aktivnost selekcija \n4. Promeni aktivnost sloja
+\n5. Uradi operaciju na sloju \n6. Uradi operaciju na selekciji \n7. Iscrtaj zeljeni sloj 
+\n8. Iscrtaj projekat \n9. Eksportuj projekat kao sliku \n10. Sacuvaj projekat \n0. Povratak na pocetni meni\n
