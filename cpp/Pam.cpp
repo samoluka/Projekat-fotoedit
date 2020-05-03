@@ -25,7 +25,7 @@ void Pam::ReadImage(const std::string & path, Layer & l, int StartX,int StartY) 
 	std::getline(f, input);
 	std::getline(f, input);
 
-	l.resize(h, w);
+	if (h > l.GetHeight() || w > l.GetWidth()) l.resize(h, w);
 
 	int size = 4 * w * h;
 	unsigned char* buff = new unsigned char[size];
@@ -33,7 +33,8 @@ void Pam::ReadImage(const std::string & path, Layer & l, int StartX,int StartY) 
 	using uchar = unsigned char;
 	f.read((char*)buff, size);
 	int x = 0;
-	int y = h - 1;
+	int y =l.GetHeight() - 1 - StartY;
+
 	for (int i = 0; i < size;i += 4) {
 
 		uchar r = (uchar)buff[i];
@@ -41,8 +42,8 @@ void Pam::ReadImage(const std::string & path, Layer & l, int StartX,int StartY) 
 		uchar b = (uchar)buff[i + 2];
 		uchar a = (uchar)buff[i + 3] * 100 / 255;
 		int xx = x + StartX;
-		int yy = y - StartY;
-		if (yy >= l.GetHeight() || xx >= l.GetWidth()) continue;
+		int yy = y;
+		if (yy >= l.GetHeight() || yy<0 || xx >= l.GetWidth()) continue;
 		l.SetPixel(yy, xx, Pixel(r, g, b, a));
 		x++;
 		if (x >= w) {

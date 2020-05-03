@@ -59,7 +59,7 @@ public:
 		SDL_Event windowEvent;
 		while (!finished) {
 			loaded = 1;
-			SDL_FillRect(windowSurface, NULL, 0);
+			SDL_FillRect(windowSurface, NULL, SDL_MapRGB(windowSurface->format, 200, 200, 200));
 			load(file, imageSurface, changeg);
 			load(l1, imageSurface1, change[0]);
 			load(l2, imageSurface2, change[1]);

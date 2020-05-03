@@ -1,13 +1,14 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "SDLMy.h"
+
 #include <thread>
 #include <iostream>
-#include "Pixel.h"
 #include <vector>
-#include "Layer.h"
-#include "Bitmap.h"
 #include <chrono>
 #include <ctime>
+#include "Pixel.h"
+#include "SDLMy.h"
+#include "Layer.h"
+#include "Bitmap.h"
 #include "PredefineOperation.h"
 #include "CompositeOperation.h"
 #include "SelectionSet.h"
