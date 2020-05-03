@@ -2,7 +2,7 @@
 #include <regex>
 #include <fstream>
 
-void Pam::load(const std::string & path, Layer & l) {
+void Pam::ReadImage(const std::string & path, Layer & l, int StartX,int StartY) {
 	std::ifstream f(path, std::ios::binary);
 	std::string input;
 	std::getline(f, input);
@@ -40,7 +40,10 @@ void Pam::load(const std::string & path, Layer & l) {
 		uchar g = (uchar)buff[i + 1];
 		uchar b = (uchar)buff[i + 2];
 		uchar a = (uchar)buff[i + 3] * 100 / 255;
-		l.GetMatrix()[y*w + x] = Pixel(r, g, b, a);
+		int xx = x + StartX;
+		int yy = y - StartY;
+		if (yy >= l.GetHeight() || xx >= l.GetWidth()) continue;
+		l.SetPixel(yy, xx, Pixel(r, g, b, a));
 		x++;
 		if (x >= w) {
 			x = 0;
@@ -53,7 +56,7 @@ void Pam::load(const std::string & path, Layer & l) {
 
 }
 
-void Pam::out(const std::string & path, Layer & l) {
+void Pam::WriteImage(const std::string & path, Layer & l) {
 	int w = l.GetWidth();
 	int h = l.GetHeight();
 	std::ofstream f(path, std::ios::binary);

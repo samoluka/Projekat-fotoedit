@@ -3,8 +3,11 @@
 #include <iostream>
 #include <string>
 #include "Layer.h"
-class BMP {
-public:
-	static void ReadBMP(const std::string&, Layer&, int = 0, int = 0);
-	static void ExportBMP(const std::string&,Layer&);
+#include "ImageLoader.h"
+
+
+class BMP:public ImageLoader {
+private:
+	void ReadImage(const std::string&, Layer&, int = 0, int = 0);
+	void WriteImage(const std::string&, Layer&);
 };

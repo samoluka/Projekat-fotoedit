@@ -41,7 +41,7 @@ Project::Project(const std::string & path) {
 	for (int i = 0; i < size; i++) {
 
 		f >> input;
-		BMP::ReadBMP(input, l[i]);
+		ImageLoader::in(input, l[i]);
 		this->l.push_back(&l[i]);
 		this->active.push_back(1);
 		std::cout << "Ucitana slika\n";
@@ -59,7 +59,7 @@ void Project::ExportBMP(const std::string &s) {
 	for (int i = 0; i < e.GetMatrix().size(); i++) {
 		e.GetMatrix()[i] = ePixel(l.size() - 1, i);
 	}
-	BMP::ExportBMP(s, e);
+	ImageLoader::out(s, e);
 }
 
 void Project::addLayer(Layer &l) {

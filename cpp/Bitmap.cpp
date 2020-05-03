@@ -4,7 +4,7 @@
 #include "Pixel.h"
 #include <ctime>
 
-void BMP::ReadBMP(const std::string& file, Layer & l, int StartX, int StartY) {
+void BMP::ReadImage(const std::string& file, Layer & l, int StartX, int StartY) {
 	int i;
 	FILE* f = fopen(file.c_str(), "rb");
 	if (!f) return;
@@ -49,8 +49,7 @@ const int infoHeaderSize = 40;
 unsigned char* createBitmapFileHeader(int height, int width, int pitch, int paddingSize);
 unsigned char* createBitmapInfoHeader(int height, int width);
 
-void BMP::ExportBMP(const std::string& file, Layer & l) {
-
+void BMP::WriteImage(const std::string& file, Layer & l) {
 	int pitch = l.GetWidth() * 4;
 	unsigned char padding[3] = { 0, 0, 0 };
 	int paddingSize = (4 - (pitch) % 4) % 4;

@@ -11,6 +11,10 @@
 #include <Bitmap.h>
 #include <vector>
 #include <utility>
+#include "ImageLoader.h"
+
+
+
 class Project{
 	std::vector<Layer*> l;
 	std::vector<SelectionSet*> s;
@@ -39,7 +43,7 @@ public:
 	}
 	void addLayer(Layer&);
 	void Draw(const std::string& path) {
-		BMP::ExportBMP(path, crtanje);
+		ImageLoader::out(path, crtanje);
 	}
 	void DelLayer(int rb) {
 		l.erase(l.begin() + rb);
@@ -53,10 +57,10 @@ public:
 			e.SetWidth(1);
 			e.SetHeight(1);
 			e.GetMatrix().resize(1);
-			BMP::ExportBMP(s, e);
+			ImageLoader::out(s, e);
 			return;
 		}
-		BMP::ExportBMP(s, *l[br]);
+		ImageLoader::out(s, *l[br]);
 
 	}
 	void ReloadSurface() {
@@ -78,12 +82,12 @@ public:
 		return ForDraw;
 	}
 	void addLayer(const std::string s, Layer& l) {
-		BMP::ReadBMP(s, l, 0, 0);
+		ImageLoader::in(s, l, 0, 0);
 		addLayer(l);
 	};
 	void addLayer(const std::string s, int num, int x, int y) {
 		if (num >= 0 && num < l.size())
-			BMP::ReadBMP(s, *l[num], x, y);
+			ImageLoader::in(s, *l[num], x, y);
 	};
 	int NumOFLayers() {
 		return l.size();
@@ -163,7 +167,7 @@ public:
 				}
 				fclose(pr);
 			}
-			BMP::ExportBMP(lay, *x);
+			ImageLoader::out(lay, *x);
 			f << lay << std::endl;
 		}
 		f.close();
