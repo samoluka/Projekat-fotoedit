@@ -64,9 +64,9 @@ int obrada_prva(Project& p) {
 }
 
 void ispis_drugi() {
-	std::cout << "1. Dodaj sloj \n2.Dodaj selekciju \n3.Pogledaj aktivnost selekcija \n4.Promeni aktivnost sloja\n";
+	std::cout << "1. Dodaj sloj \n2.Dodaj selekciju \n3.Pogledaj selekcije \n4.Promeni aktivnost sloja\n";
 	std::cout << "5.Uradi operaciju na sloju \n6.Uradi operaciju na selekciji \n7.Dodaj sliku na sloj \n8.Obrisi sloj ";
-	std::cout << "\n9. Promeni prikaz \n10.Eksportuj projekat kao sliku \n11.Sacuvaj projekat ";
+	std::cout << "\n9. Promeni prikaz \n10.Eksportuj projekat kao sliku \n11.Sacuvaj projekat \n12.Pogledaj aktivnost slojeva ";
 	std::cout << "\n0.Povratak na pocetni meni\n//////////////////\n";
 }
 std::map<int, Operation*> getOperation = {
@@ -120,7 +120,7 @@ void operacija_meni(Project& p, int numsloj, int numselekcije) {
 		p.mediana(numsloj);
 		return;
 	}
-	if (komanda < 0 || komanda > 15) return;
+	if (komanda < 0 || komanda > 17) return;
 	Operation* o = nullptr;
 	void* v = nullptr;
 	if (komanda == 15) {
@@ -192,13 +192,13 @@ int obrada_druga(Project& p, SDLMY* s) {
 		case 2:
 			std::cout << "Unesite redni broj skupa selekcija u koji zelite da dodate selekciju(-1 za novi skup):\n";
 			std::cin >> opcija;
-			std::cout << "Unesite pocetne koordinate:\n";
+			std::cout << "Unesite pocetne koordinate po formatu \"x y\":\n";
 			std::cin >> x >> y;
 			std::cout << "Unesite sirinu selekcije:\n";
 			std::cin >> w;
 			std::cout << "Unesite visinu selekcije:\n";
 			std::cin >> h;
-			p.addSelection(new SelectionSet(), new RectSelection(x, y, h, w), opcija);
+			p.addSelection(new SelectionSet(), new RectSelection(y, x, h, w), opcija);
 			break;
 		case 3:
 			p.SelectionsPrint();
@@ -234,17 +234,17 @@ int obrada_druga(Project& p, SDLMY* s) {
 			std::cout << "Unesite redni broj sloja na kojem primenjujete operaciju:(-1 za sve slojeve):\n";
 			std::cin >> x;
 			operacija_meni(p, x, opcija);
-			if (opcija >= 0 && opcija <= 5) {
-				p.ExportLayer(l[opcija], opcija);
-				s->change[opcija] = 1;
+			if (x >= 0 && x <= 5) {
+				p.ExportLayer(l[x], x);
+				s->change[x] = 1;
 			}
-			else if (opcija == -1) {
+			else if (x == -1) {
 				for (int i = 0; i < 6; i++) {
 					p.ExportLayer(l[i], i);
 					s->change[i] = 1;
 				}
 			}
-			if (opcija == p.ForDrawNum() || opcija == -1) {
+			if (x == p.ForDrawNum() || x == -1) {
 				p.ReloadSurface();
 				p.Draw(s->file);
 			}
@@ -303,6 +303,9 @@ int obrada_druga(Project& p, SDLMY* s) {
 			std::cout << "Unesite ime projekta:\n";
 			std::cin >> name;
 			p.save(path, name);
+			break;
+		case 12:
+			p.printActive();
 			break;
 		default:
 			break;

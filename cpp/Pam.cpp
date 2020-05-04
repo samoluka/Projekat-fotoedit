@@ -4,6 +4,7 @@
 
 void Pam::ReadImage(const std::string & path, Layer & l, int StartX,int StartY) {
 	std::ifstream f(path, std::ios::binary);
+	if (!f.is_open()) return;
 	std::string input;
 	std::getline(f, input);
 	std::regex opt1("WIDTH ([0-9]*)");
@@ -61,6 +62,7 @@ void Pam::WriteImage(const std::string & path, Layer & l) {
 	int w = l.GetWidth();
 	int h = l.GetHeight();
 	std::ofstream f(path, std::ios::binary);
+	if (!f.is_open()) return;
 	std::string header = "P7\nWIDTH " + std::to_string(l.GetWidth()) + "\nHEIGHT " + std::to_string(l.GetHeight());
 	header += "\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n";
 	f << header;

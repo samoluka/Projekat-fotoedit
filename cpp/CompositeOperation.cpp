@@ -9,7 +9,7 @@ std::map<std::string, Operation*> CompositeOperation::getOperation = {
 	,{"mul",new OperationMul()},{"div",new OperationDiv()},{"idiv",new OperationDivInvers()},
 	{"pow",new OperationPower()},{"log",new OperationLogarithm()},{"min",new OperationMin()},{"max",new OperationMax()},
 	{"invers",new OperationInvers()},{"greyscale",new OperationGreyScale()},{"blackwhite",new OperationBlackWhite()},
-	{"<>",new CompositeOperation()}
+	{"<>",new CompositeOperation()},{"setA",new OperationSetAlpha()}
 };
 
 /*

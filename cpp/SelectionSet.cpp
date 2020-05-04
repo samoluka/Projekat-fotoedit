@@ -16,3 +16,10 @@ void SelectionSet::RemoveSelection(SelectionObject* selection) {
 		else it++;
 	}
 };
+
+std::ostream & operator<<(std::ostream & os, SelectionSet & obj) {
+	for (auto& x : obj.s) {
+		os << *x << std::endl;
+	}
+	return os;
+}

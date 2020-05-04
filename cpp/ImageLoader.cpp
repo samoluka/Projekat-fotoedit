@@ -17,6 +17,7 @@ void ImageLoader::in(const std::string& s, Layer& l, int StartX, int StartY) {
 	std::string ext;
 	ext.assign(s, s.length() - 3, 3);
 	il = extension[ext];
+	if (!il) return;
 	il->ReadImage(s, l,StartX,StartY);
 }
 void ImageLoader::out(const std::string& s, Layer& l) {
@@ -25,5 +26,6 @@ void ImageLoader::out(const std::string& s, Layer& l) {
 	std::string ext;
 	ext.assign(s, s.length() - 3, 3);
 	il = extension[ext];
+	if (!il) return;
 	il->WriteImage(s, l);
 }

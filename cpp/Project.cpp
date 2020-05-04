@@ -4,16 +4,16 @@
 
 Pixel Project::ePixel(int i, int pixnum) {
 	if (i == -1) return Pixel(0, 0, 0, 0);
-	//if (!active[i]) return Pixel(0, 0, 0, 0);
 	Pixel p;
-	if (pixnum >= l[i]->GetMatrix().size()) p = Pixel(0, 0, 0, 0);
+	if (pixnum >= int(l[i]->GetMatrix().size())) p = Pixel(0, 0, 0, 0);
 	else p = l[i]->GetMatrix()[pixnum];
 	Pixel ispod = ePixel(i - 1, pixnum);
 	float r, g, b, a;
-	r = (p.GetRed()*(p.GetAlpha() / 100.) + ispod.GetRed()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha() / 100.)));
-	b = (p.GetBlue()*(p.GetAlpha() / 100.) + ispod.GetBlue()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha() / 100.)));
-	g = (p.GetGreen()*(p.GetAlpha() / 100.) + ispod.GetGreen()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha() / 100.)));
-	a = (p.GetAlpha()*(p.GetAlpha() / 100.) + ispod.GetAlpha()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha() / 100.)));
+	int act = active[i];
+	r = (p.GetRed()*(p.GetAlpha() / 100.)*act + ispod.GetRed()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha()*act / 100.)));
+	b = (p.GetBlue()*(p.GetAlpha() / 100.)*act + ispod.GetBlue()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha()*act / 100.)));
+	g = (p.GetGreen()*(p.GetAlpha() / 100.)*act + ispod.GetGreen()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha()*act / 100.)));
+	a = (p.GetAlpha()*(p.GetAlpha() / 100.)*act + ispod.GetAlpha()*(ispod.GetAlpha() / 100.) * (1 - (p.GetAlpha()*act / 100.)));
 	p = Pixel(r, g, b, a);
 	return p;
 }
@@ -28,6 +28,8 @@ Project::Project() {
 
 Project::Project(const std::string & path) {
 	std::ifstream f(path);
+
+	if (!f.is_open()) return;
 
 	std::string input;
 
@@ -100,14 +102,22 @@ void Project::Draw(const std::string& path) {
 }
 
 void Project::DelLayer(int rb) {
+	if (rb<0 || rb>=int(l.size())) return;
 	l.erase(l.begin() + rb);
-	if (rb == l.size() || ForDraw + 1 == l.size()) ForDraw--;
-	if (rb == 0 && ForDraw == 0) crtanje = *l[0];
+	if (l.empty()) {
+		crtanje = Layer(1, 1, Pixel(0, 0, 0, 0));
+		return;
+	}
+	if (rb == 0 && ForDraw == 0) {
+		crtanje = *l[0];
+		return;
+	}
+	if (rb == int(l.size()) || ForDraw + 1 == int(l.size())) ForDraw--;
 }
 
 void Project::ExportLayer(const std::string& s, int br) {
 	if (br < 0 || br>5) return;
-	if (br >= l.size()) {
+	if (br >= int(l.size())) {
 		Layer e;
 		e.SetWidth(1);
 		e.SetHeight(1);
@@ -119,7 +129,7 @@ void Project::ExportLayer(const std::string& s, int br) {
 }
 
 void Project::ReloadSurface() {
-	if (ForDraw < -1 || ForDraw >= l.size()) return;
+	if (ForDraw < -1 || ForDraw >= int(l.size())) return;
 	if (ForDraw > -1) {
 		crtanje = *l[ForDraw];
 		return;
@@ -133,7 +143,14 @@ void Project::ReloadSurface() {
 }
 
 void Project::SetForDraw(int a) {
-	if (a >= l.size() || a < -1) return;
+	if (a < -1 || a >= int(l.size())) {
+		std::cout << a << std::endl;
+		std::cout << this->l.size() << std::endl;
+		std::cout << int(a < -1) << std::endl;
+		std::cout << int(a >= l.size()) << std::endl;
+		std::cout << "Vrednost ifa je: " << int(a < -1 || a >= l.size()) << std::endl;
+		return;
+	}
 	ForDraw = a;
 }
 
@@ -144,12 +161,12 @@ void Project::addLayer(const std::string s, Layer& l) {
 
 
 void Project::addLayer(const std::string s, int num, int x, int y) {
-	if (num >= 0 && num < l.size())
+	if (num >= 0 && num < int(l.size()))
 		ImageLoader::in(s, *l[num], x, y);
 }
 
 void Project::addSelection(SelectionSet* s, SelectionObject* so, int i) {
-	//if (i < -1 || i >= this->s.size()) return;
+	if (i < -1 || i >= int(this->s.size())) return;
 	if (i == -1) {
 		this->s.push_back(s);
 		this->s.back()->AddSelection(so);
@@ -166,12 +183,17 @@ void Project::SelectionsPrint() {
 	}
 }
 void Project::mediana(int i) {
-	for (auto& x : l) {
-		x->median();
+	if (i < -1 || i >= int(l.size())) return;
+	if (i == -1) {
+		for (auto& x : l) {
+			x->median();
+		}
+		return;
 	}
+	l[i]->median();
 }
 void Project::changeActive(int r) {
-	if (r >= active.size()) return;
+	if (r >= int(active.size()) || r<0) return;
 	active[r] = !active[r];
 }
 void Project::doOperation(int i, Operation& o, void* operand) {
@@ -181,12 +203,12 @@ void Project::doOperation(int i, Operation& o, void* operand) {
 		}
 		return;
 	}
-	if (i >= l.size()) return;
+	if (i >= int(l.size()) || i < 0) return;
 	l[i]->operator()(o, operand);
 }
 void Project::doOperationOnSelection(Operation& o, void* operand, int numsel, int numlej) {
-	if (numsel < 0 || numsel >= s.size()) return;
-	if (numlej < -1 || numlej >= l.size()) return;
+	if (numsel < 0 || numsel >= int(s.size())) return;
+	if (numlej < -1 || numlej >= int(l.size())) return;
 	if (numlej == -1) {
 		for (auto& x : l)
 			s[numsel]->doOperation(*x, o, operand);
@@ -198,15 +220,19 @@ void Project::clear() {
 	l.clear();
 	s.clear();
 	active.clear();
-	crtanje.SetWidth(100);
-	crtanje.SetHeight(100);
-	crtanje.GetMatrix().resize(100 * 100);
+	crtanje.SetWidth(1);
+	crtanje.SetHeight(1);
+	crtanje.GetMatrix().resize(1 * 1);
 	width = 0;
 	height = 0;
 }
 void Project::save(std::string path, std::string name) {
 	std::string proj = path + "/" + name + ".proj";
 	std::ofstream f(proj);
+	if (!f.is_open()) {
+		std::cout << "Greskaa\n";
+		return;
+	}
 	f << "WIDTH:" << width << std::endl;
 	f << "HEIGHT:" << height << std::endl;
 	f << "SIZE:" << l.size() << std::endl;
@@ -225,4 +251,12 @@ void Project::save(std::string path, std::string name) {
 		f << lay << std::endl;
 	}
 	f.close();
+}
+
+void Project::printActive(){
+	int i = 0;
+	for (auto x : active) {
+		std::string a = x ? "Aktivan" : "Neaktivan";
+		std::cout << "Sloj " << i++ << ":" << a << std::endl;
+	}
 }

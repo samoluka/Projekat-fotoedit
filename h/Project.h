@@ -53,4 +53,5 @@ public:
 	void doOperationOnSelection(Operation& o, void* operand, int numsel, int numlej);
 	void clear();
 	void save(std::string path, std::string name);
+	void printActive();
 };

@@ -14,8 +14,8 @@ bool Layer::OK_Cord(int i, int j)const {
 const Pixel Layer::Mediana(int i, int j)const {
 	int sumar = 0, sumag = 0, sumab = 0;
 	int n = 0;
-	for (int ii = -1;ii != 5; ii++) {
-		for (int jj = -1;jj != 5; jj++) {
+	for (int ii = -1;ii != 2; ii++) {
+		for (int jj = -1;jj != 2; jj++) {
 			if (OK_Cord(i + ii, j + jj)) {
 				sumar += matrica[(i + ii)*width + j + jj].GetRed();
 				sumag += matrica[(i + ii)*width + j + jj].GetGreen();
@@ -27,6 +27,8 @@ const Pixel Layer::Mediana(int i, int j)const {
 	return Pixel(sumar / n, sumag / n, sumab / n, 255);
 }
 Layer::Layer(int height, int width , Pixel P) {
+	if (height <= 0) height = 1;
+	if (width <= 0) width = 1;
 	try {
 		SetHeight(height);
 	}
@@ -61,7 +63,7 @@ void Layer::SetWidth(int width) {
 void Layer::resize(int NewHeight, int NewWidth){
 
 	if (NewWidth == width && NewHeight == height) return;
-
+	if (NewWidth <= 0 || NewHeight <= 0) return;
 	std::valarray<Pixel> n;
 	n.resize(NewWidth*NewHeight);
 
@@ -86,4 +88,23 @@ void Layer::median(){
 		matrica[i].SetBlue(boje[i].GetBlue());
 	}
 
+}
+
+void Layer::operator()(Operation & o, void * operand) {
+	for (auto& x : matrica) {
+		IntPixel p = x;
+		x = o(p, operand);
+	}
+}
+
+void Layer::doOperationOnPixel(int i, int j, Operation & o, void * operand) {
+	if (!OK_Cord(i, j)) return;
+	IntPixel p = matrica[i*width + j];
+	matrica[i*width + j] = o(p, operand);
+}
+std::ostream & operator<<(std::ostream & os, Layer obj) {
+	for (auto& x : obj.matrica) {
+		os << x << " ";
+	}
+	return os;
 }

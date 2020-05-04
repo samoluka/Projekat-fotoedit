@@ -60,9 +60,9 @@ void BMP::WriteImage(const std::string& file, Layer & l) {
 	int it = 0;
 	for (auto& x : l.GetMatrix()) {
 		float a = x.GetAlpha() / 100.0;
-		image[it++] = x.GetBlue() * a;
-		image[it++] = x.GetGreen() * a;
-		image[it++] = x.GetRed() * a;
+		image[it++] = x.GetBlue();
+		image[it++] = x.GetGreen();
+		image[it++] = x.GetRed();
 		image[it++] = x.GetAlpha() * 255 / 100;
 	}
 
@@ -70,6 +70,8 @@ void BMP::WriteImage(const std::string& file, Layer & l) {
 	unsigned char* infoHeader = createBitmapInfoHeader(height, width);
 
 	FILE* imageFile = fopen(file.c_str(), "wb");
+
+	if (!imageFile) return;
 
 	fwrite(fileHeader, 1, fileHeaderSize, imageFile);
 	fwrite(infoHeader, 1, infoHeaderSize, imageFile);

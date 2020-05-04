@@ -16,10 +16,5 @@ public:
 	void doOperation(Layer&, Operation&, void* = nullptr)const;
 	void AddSelection(SelectionObject*);
 	void RemoveSelection(SelectionObject*);
-	friend std::ostream& operator<<(std::ostream& os, SelectionSet& obj) {
-		for (auto& x : obj.s) {
-			os << *x << std::endl;
-		}
-		return os;
-	}
+	friend std::ostream& operator<<(std::ostream& os, SelectionSet& obj);
 };
