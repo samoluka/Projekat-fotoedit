@@ -32,6 +32,9 @@ class Project {
 public:
 	Project();
 	Project(const std::string& path);
+	~Project() {
+		clear();
+	}
 	void ExportBMP(const std::string&);
 
 	Layer& GetForDraw() { return crtanje; }
