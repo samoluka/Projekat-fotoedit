@@ -31,29 +31,35 @@ Project::Project(const std::string & path) {
 
 	if (!f.is_open()) return;
 
-	std::string input;
+	std::string input1,input2,input3,input;
 
-	std::regex opt1("WIDTH:([0-9]*)");
-	std::regex opt2("HEIGHT:([0-9]*)");
-	std::regex opt3("SIZE:([0-9]*)");
-	std::smatch res;
-	f >> input;
-	std::regex_match(input, res, opt1);
-	input = (std::string)res[1];
-	width = std::atoi(input.c_str());
+	std::regex opt1("WIDTH:([0-9]*) *");
+	std::regex opt2("HEIGHT:([0-9]*) *");
+	std::regex opt3("SIZE:([0-9]*) *");
+	std::smatch res1,res2,res3;
+	std::getline(f, input1);
+	std::getline(f, input2);
+	std::getline(f, input3);
 
-	f >> input;
-	std::regex_match(input, res, opt2);
-	input = (std::string)res[1];
-	height = std::atoi(input.c_str());
-	f >> input;
-	std::regex_match(input, res, opt3);
-	input = (std::string)res[1];
-	int size = std::atoi(input.c_str());
+	if (!std::regex_match(input1, res1, opt1) || !std::regex_match(input2, res2, opt2) || !std::regex_match(input3, res3, opt3)) {
+		return;
+	}
+
+	input1 = (std::string)res1[1];
+	width = std::atoi(input1.c_str());
+
+;
+	
+	input2 = (std::string)res2[1];
+	height = std::atoi(input2.c_str());
+	
+	input3 = (std::string)res3[1];
+	int size = std::atoi(input3.c_str());
+
 	Layer* l = new Layer[size];
 	for (int i = 0; i < size; i++) {
-
-		f >> input;
+		if (!f.is_open()) return;
+		std::getline(f, input);
 		ImageLoader::in(input, l[i]);
 		this->l.push_back(&l[i]);
 		this->active.push_back(1);
@@ -214,12 +220,7 @@ void Project::doOperationOnSelection(Operation& o, void* operand, int numsel, in
 	s[numsel]->doOperation(*l[numlej], o, operand);
 }
 void Project::clear() {
-	for (auto x : l)
-		delete x;
 	l.clear();
-	for (auto x : s) {
-		delete x;
-	}
 	s.clear();
 	active.clear();
 	crtanje.SetWidth(1);

@@ -62,7 +62,7 @@ int obrada_prva(Project& p) {
 		p.clear();
 		std::cout << "Unesi putanju do fajla projekta\n";
 		std::getline(std::cin, path);
-		p = Project(path);
+		p = * new Project(path);
 		
 		break;
 	default:
