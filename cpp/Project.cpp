@@ -103,6 +103,8 @@ void Project::Draw(const std::string& path) {
 
 void Project::DelLayer(int rb) {
 	if (rb<0 || rb>=int(l.size())) return;
+	delete l[rb];
+	l[rb] = nullptr;
 	l.erase(l.begin() + rb);
 	if (l.empty()) {
 		crtanje = Layer(1, 1, Pixel(0, 0, 0, 0));
@@ -144,11 +146,6 @@ void Project::ReloadSurface() {
 
 void Project::SetForDraw(int a) {
 	if (a < -1 || a >= int(l.size())) {
-		std::cout << a << std::endl;
-		std::cout << this->l.size() << std::endl;
-		std::cout << int(a < -1) << std::endl;
-		std::cout << int(a >= l.size()) << std::endl;
-		std::cout << "Vrednost ifa je: " << int(a < -1 || a >= l.size()) << std::endl;
 		return;
 	}
 	ForDraw = a;
@@ -217,7 +214,12 @@ void Project::doOperationOnSelection(Operation& o, void* operand, int numsel, in
 	s[numsel]->doOperation(*l[numlej], o, operand);
 }
 void Project::clear() {
+	for (auto x : l)
+		delete x;
 	l.clear();
+	for (auto x : s) {
+		delete x;
+	}
 	s.clear();
 	active.clear();
 	crtanje.SetWidth(1);

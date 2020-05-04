@@ -2,13 +2,19 @@
 #include "Operation.h";
 #include "Greske.h"
 #include <string>
-
+#include <regex>
 class OperationSetAlpha :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; };
 	std::string GetName()const { return "SetAlpha"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override { 
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
+		if (!operand) throw(GOperand_Null());
 		int i = *(int*)operand;
 		p.SetAlpha(i);
 		return p;
@@ -59,7 +65,12 @@ class OperationMin :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "min"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -71,7 +82,12 @@ class OperationMax :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "max"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -83,7 +99,15 @@ class OperationLogarithm :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "log"; };
-	ParamDouble& GetParam(const std::string& s)const override { return *new ParamDouble(std::stod(s.c_str())); }
+	ParamDouble& GetParam(const std::string& s)const override {
+		std::regex opt1("([0-9]*).([0-9]+) *");
+		std::smatch res;
+		if (std::regex_match(s, res, opt1)) {
+			double d = std::stod(s);
+			return *new ParamDouble(d);
+		}
+		return *new ParamDouble(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		double o = *(double*)operand;
@@ -95,7 +119,15 @@ class OperationPower :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "pow"; };
-	ParamDouble& GetParam(const std::string& s)const override { return *new ParamDouble(std::stod(s.c_str())); }
+	ParamDouble& GetParam(const std::string& s)const override {
+		std::regex opt1("([0-9]*).([0-9]+) *");
+		std::smatch res;
+		if (std::regex_match(s, res, opt1)) {
+			double d = std::stod(s);
+			return *new ParamDouble(d);
+		}
+		return *new ParamDouble(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		double o = *(double*)operand;
@@ -108,7 +140,12 @@ class OperationDivInvers :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "idiv"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -120,7 +157,12 @@ class OperationDiv :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "div"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -132,7 +174,12 @@ class OperationMul :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "mul"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -144,7 +191,12 @@ class OperationMinusInvers :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "imin"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -156,7 +208,12 @@ class OperationMinus :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "min"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
@@ -168,11 +225,37 @@ class OperationPlus :public Operation {
 public:
 	int GetNumOfOperand()const override { return 1; }
 	std::string GetName()const { return "plus"; };
-	ParamInt& GetParam(const std::string& s)const override { return *new ParamInt(std::atoi(s.c_str())); }
+	ParamInt& GetParam(const std::string& s)const override {
+		if (isdigit(s[0])) {
+			return *new ParamInt(std::atoi(s.c_str()));
+		}
+		return *new ParamInt(s);
+	}
 	IntPixel& operator()(IntPixel& p, void* operand)override {
 		if (!operand) throw(GOperand_Null());
 		int o = *(int*)operand;
 		p.saberi(o);
+		return p;
+	}
+};
+class OperationSetColor :public Operation {
+	int GetNumOfOperand()const override { return 1; }
+	std::string GetName()const { return "SetColor"; };
+	ParamPix& GetParam(const std::string& s)const override {
+		std::regex opt1("([0-9]+) ([0-9]+) ([0-9]+) *");
+		std::smatch res;
+		if (std::regex_match(s, res, opt1)) {
+			int r = std::stoi(res[1].str());
+			int g = std::stoi(res[2].str());
+			int b = std::stoi(res[3].str());
+			return *new ParamPix(r, g, b);
+		}
+		return *new ParamPix(s);
+	}
+	IntPixel& operator()(IntPixel& p, void* operand)override {
+		if (!operand) throw(GOperand_Null());
+		Pixel o = *(Pixel*)operand;
+		p = o;
 		return p;
 	}
 };

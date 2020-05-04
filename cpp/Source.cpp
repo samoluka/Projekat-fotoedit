@@ -5,6 +5,7 @@
 #include <vector>
 #include <chrono>
 #include <ctime>
+#include <cctype>
 #include "Pixel.h"
 #include "SDLMy.h"
 #include "Layer.h"
@@ -32,17 +33,25 @@ void crtanje(SDLMY* s) {
 	s->SDLmain();
 }
 
+bool is_number(std::string& s){
+	int i = s[0] == '-' ? 1 : 0;
+	for (i;i < s.length(); i++) {
+		if (!isdigit(s[i])) return false;
+	}
+	return true;
+}
 
 void ispis_prvi() {
-	std::cout << "1. Prazan projekat\n2. Ucitaj projekat iz fajla\n3. Napusti program\n//////////////////\n";
+	std::cout << "1. Prazan projekat\n2. Ucitaj projekat iz fajla\n0. Napusti program\n//////////////////\n";
 }
 
 int obrada_prva(Project& p) {
-	int komanda;
+	std::string s;
 	Project p2;
 	std::string path;
 	ispis_prvi();
-	std::cin >> komanda;
+	std::getline(std::cin, s);
+	int komanda = isdigit(s[0]) ? std::stoi(s) : 3;
 	switch (komanda) {
 	case 0:
 		return 0;
@@ -52,7 +61,7 @@ int obrada_prva(Project& p) {
 	case 2:
 		p.clear();
 		std::cout << "Unesi putanju do fajla projekta\n";
-		std::cin >> path;
+		std::getline(std::cin, path);
 		p = Project(path);
 		
 		break;
@@ -74,73 +83,89 @@ std::map<int, Operation*> getOperation = {
 	,{4,new OperationMul()},{5,new OperationDiv()},{6,new OperationDivInvers()},
 	{7,new OperationPower()},{8,new OperationLogarithm()},{9,new OperationMin()},{10,new OperationMax()},
 	{11,new OperationInvers()},{12,new OperationGreyScale()},{13,new OperationBlackWhite()},{16,new OperationABS()},
-	{17,new OperationSetAlpha()}
+	{17,new OperationSetAlpha()},{18,new OperationSetColor()}
 };
 void ispis_operacija_meni() {
 	std::cout << "1. Plus \n2. Minus \n3. Inverzni Minus \n4. Mnozenje \n5. Deljenje \n6. Inverzno deljenje";
 	std::cout << "\n7. Stepenovanje \n8. Logaritam \n9. Na minimum: \n10. Na maksimum \n11. Inverzija \n12. Sivo";
 	std::cout << "\n13. Crno-belo \n14. Medijana \n15. Kompozitna f-ja\n16. Apsolutna vrednost \n17.Postavi prozirnost\n";
+	std::cout << "18. Oboj\n";
 }
 void operacija_meni(Project& p, int numsloj) {
-	int komanda;
+	std::string s;
 	ispis_operacija_meni();
-	std::cin >> komanda;
 	std::string operand;
+
+	std::getline(std::cin, s);
+	int komanda = isdigit(s[0]) ? std::stoi(s) : 19;
 
 	if (komanda == 14) {
 		p.mediana(numsloj);
 		return;
 	}
-	if (komanda < 0 || komanda > 17) return;
+	if (komanda < 0 || komanda > 18) return;
 	Operation* o = nullptr;
 	void* v = nullptr;
 	if (komanda == 15) {
 		std::cout << "Unesite putanju do kompositne operacije:\n";
-		std::cin >> operand;
+		std::getline(std::cin, operand);
 		o = new CompositeOperation(operand);
 	}
 	else {
 		o = getOperation[komanda];
 		if (o->GetNumOfOperand()) {
 			std::cout << "Unesite operand operacije:\n";
-			std::cin >> operand;
+			std::getline(std::cin, operand);
 		}
 		v = o->GetParam(operand).getRef();
 	}
-	p.doOperation(numsloj, *o, v);
+	try {
+		p.doOperation(numsloj, *o, v);
+	}
+	catch(GOperand_Null& g){
+		std::cout << g << std::endl;
+	}
 }
 
 void operacija_meni(Project& p, int numsloj, int numselekcije) {
-	int komanda;
+	std::string s;
 	ispis_operacija_meni();
-	std::cin >> komanda;
+	
+
+	std::getline(std::cin, s);
+	int komanda = isdigit(s[0]) ? std::stoi(s) : 19;
+
 	std::string operand;
 
 	if (komanda == 14) {
 		p.mediana(numsloj);
 		return;
 	}
-	if (komanda < 0 || komanda > 17) return;
+	if (komanda < 0 || komanda > 18) return;
 	Operation* o = nullptr;
 	void* v = nullptr;
 	if (komanda == 15) {
 		std::cout << "Unesite putanju do kompositne operacije:\n";
-		std::cin >> operand;
+		std::getline(std::cin, operand);
 		o = new CompositeOperation(operand);
 	}
 	else {
 		o = getOperation[komanda];
 		if (o->GetNumOfOperand()) {
 			std::cout << "Unesite operand operacije:\n";
-			std::cin >> operand;
+			std::getline(std::cin, operand);
 		}
 		v = o->GetParam(operand).getRef();
 	}
-	p.doOperationOnSelection(*o, v, numselekcije, numsloj);
+	try {
+		p.doOperationOnSelection(*o, v, numselekcije, numsloj);
+	}
+	catch (GOperand_Null& g) {
+		std::cout << g << std::endl;
+	}
 }
 
 int obrada_druga(Project& p, SDLMY* s) {
-	int komanda;
 	int opcija;
 	int x, y, w, h;
 	p.ExportLayer(l[0], 0);
@@ -161,7 +186,13 @@ int obrada_druga(Project& p, SDLMY* s) {
 	std::string path;
 	std::string name;
 	ispis_drugi();
-	std::cin >> komanda;
+
+	std::string str;
+
+	std::getline(std::cin, str);
+	int komanda = isdigit(str[0]) ? std::stoi(str) : 50;
+
+
 	while (1) {
 		switch (komanda) {
 		case 0:
@@ -175,10 +206,15 @@ int obrada_druga(Project& p, SDLMY* s) {
 			return 0;
 		case 1:
 			std::cout << "Unesite path do slike za inicijalizaciju sloja(0 za prazan sloj):\n";
-			std::cin >> path;
+			std::getline(std::cin, path);
 			if (path == "0") {
-				std::cout << "Unesite visinu i sirinu:\n";
-				std::cin >> h >> w;
+				std::cout << "Unesite visinu:\n";
+				std::getline(std::cin, str);
+				w = isdigit(str[0]) ? std::stoi(str) : 1;
+
+				std::cout << "Unesite sirinu:\n";
+				std::getline(std::cin, str);
+				h = isdigit(str[0]) ? std::stoi(str) : 1;
 				p.addLayer(*new Layer(h, w,*new Pixel(0, 0, 0, 255)));
 				break;
 			}
@@ -191,13 +227,23 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 2:
 			std::cout << "Unesite redni broj skupa selekcija u koji zelite da dodate selekciju(-1 za novi skup):\n";
-			std::cin >> opcija;
-			std::cout << "Unesite pocetne koordinate po formatu \"x y\":\n";
-			std::cin >> x >> y;
+			std::getline(std::cin, str);
+			opcija = is_number(str) ? std::stoi(str) : -2;
+
+			std::cout << "Unesite x koordinatu:\n";
+			std::getline(std::cin, str);
+			x = isdigit(str[0]) ? std::stoi(str) : 0;
+			std::cout << "Unesite y koordinatu:\n";
+			std::getline(std::cin, str);
+			y = isdigit(str[0]) ? std::stoi(str) : 0;
+
 			std::cout << "Unesite sirinu selekcije:\n";
-			std::cin >> w;
+			std::getline(std::cin, str);
+			w = isdigit(str[0]) ? std::stoi(str) : 0;
 			std::cout << "Unesite visinu selekcije:\n";
-			std::cin >> h;
+			std::getline(std::cin, str);
+			h = isdigit(str[0]) ? std::stoi(str) : 0;
+
 			p.addSelection(new SelectionSet(), new RectSelection(y, x, h, w), opcija);
 			break;
 		case 3:
@@ -205,12 +251,14 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 4:
 			std::cout << "Unesite redni broj sloja kome menjate aktivnost:\n";
-			std::cin >> opcija;
+			std::getline(std::cin, str);
+			opcija = isdigit(str[0]) ? std::stoi(str) : -1;
 			p.changeActive(opcija);
 			break;
 		case 5:
 			std::cout << "Unesite redni broj sloja na kojem primenjujete operaciju(-1 za sve slojeve):\n";
-			std::cin >> opcija;
+			std::getline(std::cin, str);
+			opcija = is_number(str) ? std::stoi(str) : -2;
 			operacija_meni(p, opcija);
 			if (opcija >=0 && opcija <= 5) {
 				p.ExportLayer(l[opcija], opcija);
@@ -230,9 +278,13 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 6:
 			std::cout << "Unesite redni broj skupa selekcija na kojem primenjujete operaciju:\n";
-			std::cin >> opcija;
+			std::getline(std::cin, str);
+			opcija = isdigit(str[0]) ? std::stoi(str) : -1;
+
 			std::cout << "Unesite redni broj sloja na kojem primenjujete operaciju:(-1 za sve slojeve):\n";
-			std::cin >> x;
+			std::getline(std::cin, str);
+			x = is_number(str) ? std::stoi(str) : -2;
+
 			operacija_meni(p, x, opcija);
 			if (x >= 0 && x <= 5) {
 				p.ExportLayer(l[x], x);
@@ -252,11 +304,19 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 7:
 			std::cout << "Unesi redni broj sloja:\n";
-			std::cin >> opcija;
+			std::getline(std::cin, str);
+			opcija = isdigit(str[0]) ? std::stoi(str) : -1;
+
 			std::cout << "Unesi putanju do slike:\n";
-			std::cin >> path;
-			std::cout << "Unesi pocetne koordinate slike:\n";
-			std::cin >> x >> y;
+			std::getline(std::cin, path);
+
+			std::cout << "Unesite x koordinatu:\n";
+			std::getline(std::cin, str);
+			x = isdigit(str[0]) ? std::stoi(str) : 0;
+			std::cout << "Unesite y koordinatu:\n";
+			std::getline(std::cin, str);
+			y = isdigit(str[0]) ? std::stoi(str) : 0;
+
 			p.addLayer(path, opcija, x, y);
 			if (opcija >= 0 && opcija < 6) {
 				p.ExportLayer(l[opcija], opcija);
@@ -270,7 +330,9 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 8:
 			std::cout << "Unesite redni broj sloja koji zelite da obrisete:\n";
-			std::cin >> opcija;
+			std::getline(std::cin, str);
+			opcija = isdigit(str[0]) ? std::stoi(str) : -1;
+
 			p.DelLayer(opcija);
 			if (opcija == p.ForDrawNum() || p.ForDrawNum() + 1 == p.NumOFLayers()) {
 				p.ReloadSurface();
@@ -284,7 +346,9 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 9:
 			std::cout << "Unesite redni broj sloja za prikaz(-1 za ceo projekat):\n";
-			std::cin >> opcija;
+			std::getline(std::cin, str);
+			opcija = is_number(str) ? std::stoi(str) : -2;
+
 			p.SetForDraw(opcija);
 			std::cout << "Renderujem sliku...\n";
 			p.ReloadSurface();
@@ -294,14 +358,14 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		case 10:
 			std::cout << "Unesite putanju do izlaznog fajla:\n";
-			std::cin >> path;
+			std::getline(std::cin, path);
 			p.ExportBMP(path);
 			break;
 		case 11:
 			std::cout << "Unesite putanju do izlaznog fajla:\n";
-			std::cin >> path;
+			std::getline(std::cin, path);
 			std::cout << "Unesite ime projekta:\n";
-			std::cin >> name;
+			std::getline(std::cin, name);
 			p.save(path, name);
 			break;
 		case 12:
@@ -311,7 +375,8 @@ int obrada_druga(Project& p, SDLMY* s) {
 			break;
 		}
 		ispis_drugi();
-		std::cin >> komanda;
+		std::getline(std::cin, str);
+		komanda = isdigit(str[0]) ? std::stoi(str) : 50;
 	}
 }
 
